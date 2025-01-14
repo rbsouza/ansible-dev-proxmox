@@ -1,0 +1,39 @@
+---
+- hosts: proxmox
+  become: true
+  vars_files:
+    - group_vars/all/vault.yml
+  tasks:
+    - name: Get Proxmox version  # Get the Proxmox version
+      ansible.builtin.command: pveversion -v
+      register: proxmox_version
+      changed_when: false
+
+    - name: Print Proxmox version  # Print the output
+      ansible.builtin.debug:
+        msg: "Proxmox version: {{ proxmox_version.stdout }}"
+
+    - name: Gather facts about the Proxmox nodes  # Gather facts about the nodes
+      ansible.builtin.gather_facts:
+        fact_path: /etc/ansible/facts.d
+      changed_when: false
+
+    - name: Display gathered facts  # Display the gathered facts
+      ansible.builtin.debug:
+        var: ansible_facts
+
+    - name: Ping all nodes in the cluster  # Ping all nodes
+      ansible.builtin.ping:
+
+    - name: Check if a VM with ID 100 exists  # Check if a specific VM exists
+      ansible.builtin.uri:
+        url: https://{{ ansible_host }}:8006/api2/json/nodes/{{ ansible_hostname }}/qemu/100
+        method: GET
+        status_code: 200
+        validate_certs: no
+      register: vm_exists
+      changed_when: false
+
+    - name: Print VM existence status  # Print the result
+      ansible.builtin.debug:
+        msg: "VM 100 exists: {{ vm_exists.status == 200 }}"
