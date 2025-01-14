@@ -1,0 +1,4 @@
+# vars.yml
+api_user: root@pam!ansible-token 
+api_password: 4131f3e2-9516-4e17-b1d6-04f41bcd2236
+api_host: 192.168.15.43
